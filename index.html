@@ -416,10 +416,28 @@
     </h1>
 
     <p class="sub">
-      The <strong style="color:var(--navy);font-weight:400">2026 YISS</strong> application period has ended.
-      Registration for the <strong style="color:var(--navy);font-weight:400">2027 program</strong> reopens in January 2027.
-      Leave your email below, and we'll notify you as soon as dates are announced.
+      Registration for <strong style="color:var(--navy-deep);font-weight:500">2027 YISS</strong> will open in
+      <strong style="color:var(--gold-warm);font-weight:500">January 2027</strong>.
+      Leave your email below and we'll notify you as soon as registration opens.
     </p>
+
+    <!-- Program schedule -->
+    <div style="margin-bottom:28px;opacity:0;animation:fadeUp 0.9s ease forwards 0.48s;">
+      <div style="background:rgba(200,149,44,0.06);border:1px solid rgba(200,149,44,0.18);border-radius:5px;padding:16px 20px;">
+        <p style="margin:0 0 10px;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold-warm);font-family:'Cormorant Garamond',serif;font-weight:400;">2027 Program Dates</p>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:baseline;gap:10px;">
+            <span style="font-size:11px;font-weight:500;letter-spacing:0.08em;color:var(--navy);min-width:52px;">4 WEEK</span>
+            <span style="font-size:13px;color:var(--text-muted);">June 28 (Mon) — July 21 (Wed), 2027</span>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:10px;">
+            <span style="font-size:11px;font-weight:500;letter-spacing:0.08em;color:var(--navy);min-width:52px;">6 WEEK</span>
+            <span style="font-size:13px;color:var(--text-muted);">June 28 (Mon) — Aug 4 (Wed), 2027</span>
+          </div>
+        </div>
+        <p style="margin:8px 0 0;font-size:10px;color:#b5a078;font-style:italic;">* Subject to change</p>
+      </div>
+    </div>
 
     <div class="slideshow" id="slideshow">
       <div class="slide active"><img src="https://summer.yonsei.ac.kr/_res/summer/img/Interest1.jpg" alt="YISS Program"></div>
@@ -465,8 +483,9 @@
       <div class="success-panel" id="successPanel">
         <div class="success-icon">☀</div>
         <h3>We've noted your interest.</h3>
-        <p>We'll email you directly when YISS 2027 details are announced.
-   We'll come to you. See you in Seoul!</p>
+        <p>We'll email you directly when YISS 2027 details are announced —
+           <strong style="color:var(--navy);font-weight:400">no need to reach out to us</strong>.
+           We'll come to you. See you in Seoul!</p>
       </div>
     </div>
   </div>
@@ -565,7 +584,7 @@
 <!-- Form -->
 <script>
   // ▼ Apps Script 배포 URL로 교체
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbybXbPW_Ztqzhrf0BQTXPL90J0BSwNXvIxyZYj30pKqB054pswbuFN85_qcodvGR34HCw/exec';
+  const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
 
 document.getElementById('interestForm').addEventListener('submit', async function(e) {
   e.preventDefault();
