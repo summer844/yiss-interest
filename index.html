@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>YISS 2027 | Stay Tuned</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:       #003876;
+    --navy-deep:  #001d4a;
+    --gold:       #c9a96e;
+    --gold-warm:  #C8952C;
+    --gold-bright:#e8b84a;
+    --cream:      #fdf8ef;
+    --cream-mid:  #f5eedf;
+    --sage:       #7a9e7e;
+    --sage-light: #b8d4a3;
+    --white:      #fffdf8;
+    --text:       #2a2a2a;
+    --text-muted: #7a7060;
+    --border:     rgba(200,149,44,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    min-height: 100%;
+    background: var(--cream);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+  }
+
+  /* Warm ambient gradient */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 20% 80%, rgba(200,149,44,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 20%, rgba(135,206,235,0.04) 0%, transparent 60%),
+      linear-gradient(170deg, #fffdf5 0%, #fff8e8 30%, #fef4dc 55%, #f2f7f0 80%, #eaf0f5 100%);
+    pointer-events: none;
+    z-index: 0;
+    animation: gradient-drift 14s ease-in-out infinite alternate;
+  }
+
+  @keyframes gradient-drift {
+    0%   { opacity: 0.5; }
+    50%  { opacity: 1; }
+    100% { opacity: 0.6; }
+  }
+
+  /* Bokeh + leaves */
+  #particles { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+
+  .bokeh {
+    position: absolute;
+    border-radius: 50%;
+    bottom: -20px;
+    animation: bokehFloat linear infinite;
+    will-change: transform;
+  }
+  @keyframes bokehFloat {
+    0%   { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }
+    8%   { opacity: var(--b-opacity, 0.3); }
+    82%  { opacity: var(--b-opacity, 0.3); }
+    100% { transform: translateY(-110vh) translateX(var(--drift)) scale(1); opacity: 0; }
+  }
+
+  .leaf {
+    position: absolute;
+    top: -30px;
+    animation: leafDrift linear infinite;
+    will-change: transform;
+  }
+  .leaf svg { display: block; }
+  @keyframes leafDrift {
+    0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+    6%   { opacity: var(--l-opacity, 0.25); }
+    88%  { opacity: var(--l-opacity, 0.25); }
+    100% { transform: translateY(110vh) translateX(var(--drift)) rotate(var(--spin)); opacity: 0; }
+  }
+
+  /* Grain */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.018;
+    pointer-events: none;
+  }
+
+  /* ── Layout ── */
+  .page {
+    position: relative; z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr;
+    max-width: 100vw;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+  }
+
+  .left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 48px 0 32px;
+    border-bottom: 1px solid var(--border);
+    width: 100%;
+  }
+
+  .right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 32px 0 48px;
+    width: 100%;
+  }
+
+  @media (min-width: 1024px) {
+    .page {
+      grid-template-columns: 1fr 1fr;
+      padding: 0 48px;
+      min-height: 100vh;
+      max-width: 1160px;
+    }
+    .left {
+      padding: 80px 60px 80px 0;
+      border-right: 1px solid var(--border);
+      border-bottom: none;
+      min-height: 100vh;
+      max-width: 580px;
+    }
+    .right {
+      padding: 80px 0 80px 60px;
+      max-width: 580px;
+    }
+    .card { padding: 48px; max-width: 480px; }
+    .sub { font-size: 15px; }
+    .card-sub { font-size: 13px; }
+    .consent-label span { font-size: 12px; }
+  }
+
+  /* ── Logo ── */
+  .logo-area {
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.05s;
+  }
+  .logo-area img {
+    height: 40px; width: auto;
+    display: block;
+    object-fit: contain;
+    object-position: left center;
+  }
+
+  .wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: #7a6540;
+    font-weight: 400;
+    margin-bottom: 28px;
+    line-height: 1.8;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.15s;
+  }
+
+  /* ── Headline ── */
+  .headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    line-height: 1.05;
+    margin-bottom: 10px;
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 0.25s;
+  }
+  .headline-main {
+    font-size: clamp(36px, 8vw, 64px);
+    display: block;
+    color: var(--navy-deep);
+  }
+  .headline-accent {
+    color: var(--gold-warm);
+    font-style: italic;
+  }
+  .headline-sub {
+    font-size: clamp(18px, 4vw, 30px);
+    font-style: italic;
+    color: var(--sage);
+    display: block;
+    margin-top: 8px;
+    opacity: 0.8;
+  }
+
+  .sub {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text-muted);
+    margin-top: 20px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 0.4s;
+  }
+
+  /* ── Slideshow ── */
+  .slideshow {
+    width: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    height: 220px;
+    background: var(--cream-mid);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 20px rgba(0,56,118,0.06);
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 0.55s;
+  }
+  @media (min-width: 1024px) {
+    .slideshow { height: auto; aspect-ratio: 16 / 9; }
+  }
+  .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.9s ease; }
+  .slide.active { opacity: 1; }
+  .slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .slide-dots {
+    position: absolute;
+    bottom: 12px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 6px; z-index: 2;
+  }
+  .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+  }
+  .dot.active { background: var(--gold-warm); transform: scale(1.35); }
+
+  /* ── Card ── */
+  .card {
+    background: rgba(255,255,255,0.65);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 28px 20px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 2px 16px rgba(0,56,118,0.04);
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 0.5s;
+    width: 100%;
+  }
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    color: var(--navy-deep);
+  }
+  .card-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+    line-height: 1.65;
+  }
+
+  /* ── Form ── */
+  .field { position: relative; margin-bottom: 18px; }
+  .field label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .field input {
+    width: 100%;
+    padding: 13px 16px;
+    background: rgba(255,255,255,0.7);
+    border: 1.5px solid rgba(200,149,44,0.15);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+  .field input::placeholder { color: #b5a890; }
+  .field input:focus {
+    border-color: var(--gold-warm);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(200,149,44,0.08);
+  }
+
+  .consent-field { margin-top: 4px; margin-bottom: 4px; }
+  .consent-label { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; }
+  .consent-label input[type="checkbox"] { display: none; }
+  .custom-check {
+    width: 16px; height: 16px;
+    flex-shrink: 0; margin-top: 2px;
+    border: 1.5px solid rgba(200,149,44,0.3);
+    border-radius: 3px;
+    background: rgba(255,255,255,0.7);
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, border-color 0.2s;
+    cursor: pointer;
+  }
+  .custom-check::after {
+    content: '';
+    display: none;
+    width: 9px; height: 5px;
+    border-left: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(-45deg) translateY(-1px);
+  }
+  .consent-label input[type="checkbox"]:checked + .custom-check {
+    background: var(--gold-warm);
+    border-color: var(--gold-warm);
+  }
+  .consent-label input[type="checkbox"]:checked + .custom-check::after { display: block; }
+  .consent-label span { font-size: 13px; line-height: 1.65; color: var(--text-muted); }
+  .consent-label span strong { color: var(--navy); font-weight: 400; }
+
+  .btn {
+    width: 100%;
+    margin-top: 20px;
+    padding: 16px;
+    background: var(--navy);
+    border: none; border-radius: 4px;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative; overflow: hidden;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+  .btn:active:not(:disabled) { transform: none; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-loading { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; }
+  .btn.loading .btn-text { opacity: 0; }
+  .btn.loading .btn-loading { display: flex; }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.25);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  .error-msg { display: none; font-size: 12px; color: #c0392b; margin-top: 12px; text-align: center; }
+
+  .success-panel { display: none; text-align: center; padding: 12px 0; }
+  .success-icon {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    border: 1px solid var(--sage);
+    background: rgba(122,158,126,0.1);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px; font-size: 22px;
+  }
+  .success-panel h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px; font-weight: 400;
+    margin-bottom: 10px; color: var(--navy-deep);
+  }
+  .success-panel p { font-size: 14px; color: var(--text-muted); line-height: 1.65; }
+
+  footer {
+    position: relative; z-index: 2;
+    text-align: center; padding: 24px;
+    font-size: 11px;
+    color: #9a8a70;
+    letter-spacing: 0.05em;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div id="particles"></div>
+
+<div class="page">
+
+  <!-- ══ LEFT ══ -->
+  <div class="left">
+    <div class="logo-area">
+      <img src="https://summer.yonsei.ac.kr/_res/summer/img/Yonsei_Logo.png" alt="Yonsei International Summer School">
+    </div>
+
+    <div class="wordmark">Office of International Affairs<br>Yonsei University</div>
+
+    <h1 class="headline">
+      <span class="headline-main">Yonsei International<br><span class="headline-accent">Summer</span> School</span>
+      <span class="headline-sub">Summer in Seoul awaits you.</span>
+    </h1>
+
+    <p class="sub">
+      The <strong style="color:var(--navy);font-weight:400">2026 YISS</strong> application period has ended.
+      Registration for the <strong style="color:var(--navy);font-weight:400">2027 program</strong> reopens in January 2027.
+      Leave your email below, and we'll notify you as soon as dates are announced.
+    </p>
+
+    <div class="slideshow" id="slideshow">
+      <div class="slide active"><img src="https://summer.yonsei.ac.kr/_res/summer/img/Interest1.jpg" alt="YISS Program"></div>
+      <div class="slide"><img src="https://summer.yonsei.ac.kr/_res/summer/img/Interest2.jpg" alt="YISS Program"></div>
+      <div class="slide"><img src="https://summer.yonsei.ac.kr/_res/summer/img/Interest3.jpg" alt="YISS Program"></div>
+      <div class="slide"><img src="https://summer.yonsei.ac.kr/_res/summer/img/Interest4.jpg" alt="YISS Program"></div>
+      <div class="slide"><img src="https://summer.yonsei.ac.kr/_res/summer/img/Interest5.jpg" alt="YISS Program"></div>
+      <div class="slide-dots" id="slideDots"></div>
+    </div>
+  </div>
+
+  <!-- ══ RIGHT ══ -->
+  <div class="right">
+    <div class="card">
+      <h2 class="card-title">Stay Tuned</h2>
+      <p class="card-sub">Register below and we'll email you directly when the dates are announced. No need to follow up with us — we've got you covered.</p>
+
+      <form id="interestForm">
+        <div class="field">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" placeholder="you@university.edu" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="university">Home institution</label>
+          <input type="text" id="university" name="university" placeholder="e.g. University of Toronto" required autocomplete="organization">
+        </div>
+        <div class="field consent-field">
+          <label class="consent-label">
+            <input type="checkbox" id="consent" name="consent">
+            <span class="custom-check"></span>
+            <span>
+              I agree to the collection and use of my email address and institution name for the purpose of receiving YISS 2027 program updates. Information will be retained until the <strong>general tuition fee payment deadline</strong> and deleted thereafter.
+            </span>
+          </label>
+        </div>
+        <button type="submit" class="btn" id="submitBtn">
+          <span class="btn-text">Notify me</span>
+          <span class="btn-loading"><span class="spinner"></span></span>
+        </button>
+        <div class="error-msg" id="errorMsg">Something went wrong — please try again.</div>
+      </form>
+
+      <div class="success-panel" id="successPanel">
+        <div class="success-icon">☀</div>
+        <h3>We've noted your interest.</h3>
+        <p>We'll email you directly when YISS 2027 details are announced —
+           <strong style="color:var(--navy);font-weight:400">no need to reach out to us</strong>.
+           We'll come to you. See you in Seoul!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>Yonsei University Office of International Affairs &nbsp;·&nbsp; summer@yonsei.ac.kr</footer>
+
+<!-- Bokeh (golden sunlight) + floating leaves -->
+<script>
+(function(){
+  const c = document.getElementById('particles');
+
+  // ── Golden bokeh — 햇살 빛망울 ──
+  const orbColors = [
+    'rgba(255,210,80,',   // golden sun
+    'rgba(255,230,140,',  // light gold
+    'rgba(240,200,100,',  // warm amber
+    'rgba(200,230,200,',  // hint of green
+    'rgba(255,200,150,',  // peach
+  ];
+
+  for (let i = 0; i < 30; i++) {
+    const el = document.createElement('div');
+    el.className = 'bokeh';
+    const size = Math.random() * 24 + 5;
+    const left = Math.random() * 100;
+    const delay = Math.random() * 16;
+    const dur = Math.random() * 16 + 12;
+    const drift = (Math.random() - 0.5) * 80;
+    const opacity = Math.random() * 0.28 + 0.08;
+    const color = orbColors[Math.floor(Math.random() * orbColors.length)];
+    const blur = Math.random() * 2 + 0.5;
+
+    el.style.cssText =
+      `left:${left}vw;width:${size}px;height:${size}px;` +
+      `background:radial-gradient(circle,${color}${opacity}),${color}${opacity*0.15}));` +
+      `box-shadow:0 0 ${size}px ${color}0.1);` +
+      `filter:blur(${blur}px);` +
+      `animation:bokehFloat ${dur}s linear ${delay}s infinite;` +
+      `--drift:${drift}px;--b-opacity:${opacity};`;
+    c.appendChild(el);
+  }
+
+  // ── Floating leaves ──
+  const leafColors = ['#8db580','#7a9e6e','#a3bf96','#6d8b60','#9cc48a','#85b070'];
+  const leafPath = 'M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20c4 0 8.5-3.5 10-9.5 1-4 .5-6.5.5-6.5S18.5 5.5 17 8z';
+
+  for (let i = 0; i < 18; i++) {
+    const el = document.createElement('div');
+    el.className = 'leaf';
+    const size = Math.random() * 14 + 8;
+    const left = Math.random() * 100;
+    const delay = Math.random() * 20;
+    const dur = Math.random() * 12 + 18;
+    const drift = (Math.random() - 0.5) * 160;
+    const spin = Math.random() * 720 - 360;
+    const opacity = Math.random() * 0.22 + 0.1;
+    const color = leafColors[Math.floor(Math.random() * leafColors.length)];
+
+    el.innerHTML = `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}"><path d="${leafPath}"/></svg>`;
+    el.style.cssText =
+      `left:${left}vw;` +
+      `animation:leafDrift ${dur}s linear ${delay}s infinite;` +
+      `--drift:${drift}px;--spin:${spin}deg;--l-opacity:${opacity};`;
+    c.appendChild(el);
+  }
+})();
+</script>
+
+<!-- Slideshow (4초 간격) -->
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const dotsEl = document.getElementById('slideDots');
+  let current = 0, timer;
+  slides.forEach((_,i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i===0?' active':'');
+    dot.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(dot);
+  });
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dotsEl.children[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    dotsEl.children[current].classList.add('active');
+    resetTimer();
+  }
+  function next() { goTo((current+1) % slides.length); }
+  function resetTimer() { clearInterval(timer); timer = setInterval(next, 4000); }
+  resetTimer();
+})();
+</script>
+
+<!-- Form -->
+<script>
+  // ▼ Apps Script 배포 URL로 교체
+  const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+document.getElementById('interestForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const email      = document.getElementById('email').value.trim();
+  const university = document.getElementById('university').value.trim();
+  const btn        = document.getElementById('submitBtn');
+  const errorMsg   = document.getElementById('errorMsg');
+
+  btn.disabled = true;
+  btn.classList.add('loading');
+  errorMsg.style.display = 'none';
+
+  if (!document.getElementById('consent').checked) {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    errorMsg.textContent = 'Please agree to the data collection terms to proceed.';
+    errorMsg.style.display = 'block';
+    return;
+  }
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ email, university }),
+    });
+    const result = await res.json();
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    if (result && result.success) {
+      document.getElementById('interestForm').style.display = 'none';
+      document.getElementById('successPanel').style.display = 'block';
+    } else {
+      errorMsg.textContent = (result && result.message) ? result.message : 'Something went wrong — please try again.';
+      errorMsg.style.display = 'block';
+    }
+  } catch (err) {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    errorMsg.textContent = 'Connection error — please try again.';
+    errorMsg.style.display = 'block';
+  }
+});
+</script>
+
+</body>
+</html>
